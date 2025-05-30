@@ -1,0 +1,464 @@
+﻿МІНІСТЕРСТВО ОСВІТИ І НАУКИ УКРАЇНИ
+ХАРКІВСЬКИЙ НАЦІОНАЛЬНИЙ УНІВЕРСИТЕТ РАДІОЕЛЕКТРОНІКИ
+ 
+  
+КАФЕДРА ПРОГРАМНОЇ ІНЖЕНЕРІЇ
+ 
+
+
+ 
+Дисципліна «Скриптові мови програмування»
+Звіт
+з лабораторної роботи №3
+
+
+ 
+ 
+   
+Виконав:
+ст. гр. ПЗПІ-23-5
+Жилєнков А. О.
+
+
+	 
+	Перевірив:
+ст. викладач кафедри ПІ
+Сокорчук І. П.
+ 
+	
+
+
+
+
+
+Харків – 2025
+1 ІСТОРІЯ ЗМІН
+№
+	Дата
+	Версія звіту
+	Опис змін та виправлень
+	1
+	30.05.2025
+	0.1
+	Створено розділ «Завдання»
+	2
+	30.05.2025
+	0.1
+	Створено розділ «Опис Виконаної роботи»
+	3
+	30.05.2025
+	0.1
+	Створено розділ «Висновки»
+	4
+	30.05.2025
+	0.1
+	Створено розділ «Додаток А»
+	5
+	30.05.2025
+	0.1
+	Створено розділ «Додаток Б»
+	6
+	30.05.2025
+	0.1
+	Створено розділ «Додаток В»
+	________________
+2 ЗАВДАННЯ
+Метою лабораторної роботи є розробка web-застосунку продовольчого магазину засобами мови програмування PHP з використанням бази даних SQLite для збереження інформації. У рамках роботи потрібно на основі раніше реалізованого консольного застосунку створити web-версію магазину, яка дозволяє користувачеві переглядати товари, додавати їх до кошика, переглядати вміст кошика, оформлювати підсумковий рахунок, а також вводити та редагувати дані особистого профілю. Усі ці дії повинні бути реалізовані у вигляді окремих PHP-сторінок, а збереження інформації має відбуватись у локальній базі даних SQLite.
+________________
+
+
+3 ОПИС ВИКОНАНОЇ РОБОТИ
+У ході виконання лабораторної роботи було реалізовано багатосторінковий web-застосунок продовольчого магазину «Весна» мовою PHP із використанням бази даних SQLite для збереження інформації про товари, користувача та кошик. Уся взаємодія з додатком здійснюється через відкриття відповідних PHP-файлів у браузері.
+Файл index.php (див. В.1 index) є головною сторінкою застосунку (див. рис. Б.1). У ньому реалізовано просту HTML-структуру із заголовком, привітальним текстом та меню у вигляді трьох посилань. Меню надає змогу перейти до сторінки з переліком товарів, до профілю користувача або до сторінки перегляду кошика. Сторінка містить підключення зовнішнього файлу стилів style.css для центрованого відображення контенту. Цей файл не містить жодної PHP-логіки, а лише забезпечує структуру початкового інтерфейсу.
+Файл db.php (див. В.2 db) відповідає за підключення до бази даних SQLite. Він створює об'єкт бази даних на основі файлу shop.db та вмикає режим виключень для зручного виявлення помилок. Цей файл є технічним і підключається до кожного скрипту, який взаємодіє з базою даних.
+Файл init_db.php (див. В.3 init_db) служить для ініціалізації структури бази даних. У ньому створюються три таблиці: таблиця products для зберігання товарів із полями id, name і price; таблиця user_profile для зберігання інформації про користувача з полями id, name, age; таблиця cart для зберігання вмісту кошика користувача, що містить id, user_id, product_id та quantity. Завдяки умовному створенню таблиць, скрипт можна запускати повторно без втрати існуючих даних.
+Файл products.php (див. В.4 products) відображає список усіх товарів, що є в базі даних (див. рис. Б.2). Дані витягуються з таблиці products і відображаються у вигляді HTML-таблиці з полями «назва», «ціна», «кількість» і кнопкою додавання товару до кошика. Кожна кнопка «Додати» є частиною форми, яка передає ідентифікатор товару та кількість на сервер методом POST для обробки.
+Файл add_to_cart.php (див. В.5 add_to_cart) обробляє запити на додавання товарів до кошика. Він отримує ідентифікатор товару та вибрану кількість із POST-запиту, перевіряє, чи такий товар уже існує у кошику для фіксованого користувача з user_id = 1, і відповідно оновлює кількість або створює новий запис. Після обробки запиту відбувається автоматичне перенаправлення користувача назад до списку товарів.
+Файл cart.php (див. В.6 cart) виводить вміст кошика користувача, витягуючи всі записи з таблиці cart, об'єднані з таблицею products, для відображення назв товарів, цін, кількостей та обчисленої вартості (див. рис. Б.3). Результати виводяться у вигляді таблиці. Під таблицею вказується загальна сума до сплати. Якщо кошик порожній, виводиться відповідне повідомлення. Також додається посилання для переходу до підсумкового рахунку.
+Файл receipt.php (див. В.7 receipt) формує підсумковий рахунок. Він також витягує інформацію з таблиць cart і products та виводить підсумкову таблицю з переліком товарів, цінами, кількостями та вартостями (див. рис. Б.4). Внизу виводиться загальна сума покупки. Після формування чека кошик автоматично очищується, що імітує завершення покупки.
+Файл profile.php (див. В.8 profile) відповідає за створення та редагування профілю користувача. Якщо профіль ще не створений, він надає форму для введення імені та віку, які зберігаються у базі (див. рис. Б.5). Якщо профіль уже існує, форма автоматично заповнюється наявними даними, які користувач може змінити. Після збереження профілю користувач перенаправляється назад до сторінки з товарами.
+Файл style.css (див. В.9 style) використовується для оформлення інтерфейсу всіх сторінок. У ньому встановлюється шрифт, фон, вирівнювання контенту по центру, стилі таблиць, а також оформлення кнопок і посилань. Усі сторінки, що мають HTML-вміст, підключають цей файл, що забезпечує єдиний стиль в усьому застосунку.
+Файл shop.db є фізичним файлом бази даних SQLite, у якому зберігається вся інформація — перелік товарів, профіль користувача та стан кошика. Він створюється автоматично при першому запуску init_db.php і використовується всіма іншими скриптами через підключення в db.php.
+
+
+________________
+
+
+ВИСНОВКИ
+У ході виконання лабораторної роботи було успішно створено багатосторінковий web-застосунок продовольчого магазину з використанням мови PHP та бази даних SQLite. Застосунок реалізує базову функціональність типового магазину: перегляд товарів, додавання їх до кошика, оформлення підсумкового рахунку та збереження інформації про користувача. У процесі розробки було опрацьовано важливі аспекти роботи з формами, передачі даних методом POST, організації структури PHP-застосунку та централізованого підключення до бази даних. Особливу увагу було приділено забезпеченню зручного та зрозумілого інтерфейсу, що стало можливим завдяки використанню стилів CSS.
+________________
+
+
+ДОДАТОК А
+Відеозапис
+Відеозапис презентації результатів лабораторної роботи: https://youtu.be/BgsClx8BPc4
+Хронологічний опис відеозапису
+00:21 — Опис файлу index.php
+01:13 — Опис файлу db.php
+01:45 — Опис файлу init_db.php
+03:20 — Опис файлу products.php
+05:03 — Опис файлу add_to_cart.php
+07:08 — Опис файлу cart.php
+09:16 — Опис файлу receipt.php
+10:21 — Опис файлу profile.php
+12:49 — Тестування програми
+________________
+ДОДАТОК Б
+Графічні матеріали
+  Рисунок Б.1 — Головна сторінка застосунку
+  
+
+Рисунок Б.2 — Список усіх товарів
+
+
+  
+
+Рисунок Б.3 — Вміст кошику користувача
+
+
+  Рисунок Б.4 — Підсумковий рахунок
+  Рисунок Б.5 — Сторінка профілю користувача
+________________
+ДОДАТОК В
+Програмний код
+В.1 index
+GitHub репозиторій: https://github.com/NureZhylienkovAndrii/smp-pzpi-23-5-zhylienkov-andrii/blob/main/Lab3/smp-pzpi-23-5-zhylienkov-andrii-lab3/index.php
+  1 <?php
+  2 ?>
+  3
+  4 <!DOCTYPE html>
+  5 <html lang="uk">
+  6 <head>
+  7     <meta charset="UTF-8">
+  8     <title>Магазин "Весна"</title>
+  9     <link rel="stylesheet" href="style.css">
+ 10 </head>
+ 11 <body>
+ 12
+ 13     <h1>Продовольчий магазин "Весна"</h1>
+ 14     <p>Ласкаво просимо до нашого магазину!</p>
+ 15
+ 16     <div class="menu">
+ 17         <a href="products.php">Переглянути товари</a>
+ 18         <a href="profile.php">Мій профіль</a>
+ 19         <a href="cart.php">Переглянути кошик</a>
+ 20     </div>
+ 21
+ 22 </body>
+ 23 </html>
+В.2 db
+GitHub репозиторій: https://github.com/NureZhylienkovAndrii/smp-pzpi-23-5-zhylienkov-andrii/blob/main/Lab3/smp-pzpi-23-5-zhylienkov-andrii-lab3/db.php
+  1 <?php
+  2 $db = new SQLite3('shop.db');
+  3
+  4 $db->enableExceptions(true);
+  5 ?>
+В.3 init_db
+GitHub репозиторій: https://github.com/NureZhylienkovAndrii/smp-pzpi-23-5-zhylienkov-andrii/blob/main/Lab3/smp-pzpi-23-5-zhylienkov-andrii-lab3/init_db.php
+  1 <?php
+  2 $db = new SQLite3('shop.db');
+  3
+  4 $db->exec("CREATE TABLE IF NOT EXISTS products (
+  5     id INTEGER PRIMARY KEY AUTOINCREMENT,
+  6     name TEXT NOT NULL,
+  7     price INTEGER NOT NULL,
+  8     min_age INTEGER DEFAULT 0
+  9 )");
+ 10
+ 11 $db->exec("CREATE TABLE IF NOT EXISTS user_profile (
+ 12     id INTEGER PRIMARY KEY AUTOINCREMENT,
+ 13     name TEXT NOT NULL,
+ 14     age INTEGER NOT NULL
+ 15 )");
+ 16
+ 17 $db->exec("CREATE TABLE IF NOT EXISTS cart (
+ 18     id INTEGER PRIMARY KEY AUTOINCREMENT,
+ 19     user_id INTEGER NOT NULL,
+ 20     product_id INTEGER NOT NULL,
+ 21     quantity INTEGER NOT NULL,
+ 22     FOREIGN KEY(user_id) REFERENCES user_profile(id),
+ 23     FOREIGN KEY(product_id) REFERENCES products(id)
+ 24 )");
+В.4 products
+GitHub репозиторій: https://github.com/NureZhylienkovAndrii/smp-pzpi-23-5-zhylienkov-andrii/blob/main/Lab3/smp-pzpi-23-5-zhylienkov-andrii-lab3/products.php
+  1 <?php
+  2 require 'db.php';
+  3
+  4 echo "<link rel='stylesheet' href='style.css'>";
+  5
+  6 echo "<h2>Список усіх товарів:</h2>";
+  7
+  8 $results = $db->query("SELECT * FROM products");
+  9
+ 10 echo "<form method='POST' action='add_to_cart.php'>";
+ 11 echo "<table border='1' cellpadding='5'>";
+ 12 echo "<tr><th>Назва</th><th>Ціна</th><th>Кількість</th><th>Дія</th></tr>";
+ 13
+ 14 while ($row = $results->fetchArray(SQLITE3_ASSOC)) {
+ 15     echo "<tr>";
+ 16     echo "<td>" . htmlspecialchars($row['name']) . "</td>";
+ 17     echo "<td>" . $row['price'] . "</td>";
+ 18     echo "<td>
+ 19             <input type='number' name='quantity[{$row['id']}]' min='0' max='99' value='0'>
+ 20           </td>";
+ 21     echo "<td>
+ 22             <button type='submit' name='add' value='{$row['id']}'>Додати</button>
+ 23           </td>";
+ 24     echo "</tr>";
+ 25 }
+ 26
+ 27 echo "</table>";
+ 28 echo "</form>";
+ 29 echo "<p><a href='index.php'>Повернутися на головну</a></p>";
+ 30 ?>
+В.5 add_to_cart
+GitHub репозиторій: https://github.com/NureZhylienkovAndrii/smp-pzpi-23-5-zhylienkov-andrii/blob/main/Lab3/smp-pzpi-23-5-zhylienkov-andrii-lab3/add_to_cart.php
+  1 <?php
+  2 require 'db.php';
+  3
+  4 echo "<link rel='stylesheet' href='style.css'>";
+  5
+  6 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add'])) {
+  7     $product_id = (int)$_POST['add'];
+  8     $quantity = isset($_POST['quantity'][$product_id]) ? (int)$_POST['quantity'][$product_id] : 0;
+  9
+ 10     if ($quantity < 1 || $quantity > 99) {
+ 11         echo "Помилка: кількість повинна бути від 1 до 99.";
+ 12         echo "<p><a href='products.php'>Повернутися</a></p>";
+ 13         exit;
+ 14     }
+ 15
+ 16     $user_id = 1;
+ 17
+ 18     $stmt = $db->prepare("SELECT id, quantity FROM cart WHERE user_id = :uid AND product_id = :pid");
+ 19     $stmt->bindValue(':uid', $user_id, SQLITE3_INTEGER);
+ 20     $stmt->bindValue(':pid', $product_id, SQLITE3_INTEGER);
+ 21     $existing = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
+ 22
+ 23     if ($existing) {
+ 24         $new_qty = $existing['quantity'] + $quantity;
+ 25         $update = $db->prepare("UPDATE cart SET quantity = :qty WHERE id = :id");
+ 26         $update->bindValue(':qty', $new_qty, SQLITE3_INTEGER);
+ 27         $update->bindValue(':id', $existing['id'], SQLITE3_INTEGER);
+ 28         $update->execute();
+ 29     } else {
+ 30         $insert = $db->prepare("INSERT INTO cart (user_id, product_id, quantity) VALUES (:uid, :pid, :qty)");
+ 31         $insert->bindValue(':uid', $user_id, SQLITE3_INTEGER);
+ 32         $insert->bindValue(':pid', $product_id, SQLITE3_INTEGER);
+ 33         $insert->bindValue(':qty', $quantity, SQLITE3_INTEGER);
+ 34         $insert->execute();
+ 35     }
+ 36
+ 37     header("Location: products.php");
+ 38     exit;
+ 39 }
+ 40
+ 41 echo "Невірний запит.";
+В.6 cart
+GitHub репозиторій: https://github.com/NureZhylienkovAndrii/smp-pzpi-23-5-zhylienkov-andrii/blob/main/Lab3/smp-pzpi-23-5-zhylienkov-andrii-lab3/cart.php
+  1 <?php
+  2 require 'db.php';
+  3
+  4 echo "<link rel='stylesheet' href='style.css'>";
+  5
+  6 $user_id = 1;
+  7
+  8 $stmt = $db->prepare("
+  9     SELECT
+ 10         p.name,
+ 11         p.price,
+ 12         c.quantity,
+ 13         (p.price * c.quantity) AS total
+ 14     FROM cart c
+ 15     JOIN products p ON p.id = c.product_id
+ 16     WHERE c.user_id = :uid
+ 17 ");
+ 18 $stmt->bindValue(':uid', $user_id, SQLITE3_INTEGER);
+ 19 $results = $stmt->execute();
+ 20
+ 21 $hasItems = false;
+ 22 $grandTotal = 0;
+ 23
+ 24 echo "<h2>Ваш кошик:</h2>";
+ 25
+ 26 echo "<table border='1' cellpadding='5'>";
+ 27 echo "<tr><th>Назва товару</th><th>Ціна</th><th>Кількість</th><th>Вартість</th></tr>";
+ 28
+ 29 while ($row = $results->fetchArray(SQLITE3_ASSOC)) {
+ 30     $hasItems = true;
+ 31     echo "<tr>";
+ 32     echo "<td>" . htmlspecialchars($row['name']) . "</td>";
+ 33     echo "<td>" . $row['price'] . "</td>";
+ 34     echo "<td>" . $row['quantity'] . "</td>";
+ 35     echo "<td>" . $row['total'] . "</td>";
+ 36     echo "</tr>";
+ 37     $grandTotal += $row['total'];
+ 38 }
+ 39
+ 40 echo "</table>";
+ 41
+ 42 if ($hasItems) {
+ 43     echo "<h3>Разом до сплати: {$grandTotal}</h3>";
+ 44     echo "<p><a href='receipt.php'>Переглянути чек</a></p>";
+ 45 } else {
+ 46     echo "<p>Кошик порожній.</p>";
+ 47 }
+ 48
+ 49 echo "<p><a href='products.php'>Повернутися до товарів</a></p>";
+ 50 echo "<p><a href='index.php'>Повернутися на головну</a></p>";
+ 51 ?>
+В.7 receipt
+GitHub репозиторій: https://github.com/NureZhylienkovAndrii/smp-pzpi-23-5-zhylienkov-andrii/blob/main/Lab3/smp-pzpi-23-5-zhylienkov-andrii-lab3/receipt.php
+  1 <?php
+  2 require 'db.php';
+  3 echo "<link rel='stylesheet' href='style.css'>";
+  4
+  5 $user_id = 1;
+  6
+  7 echo "<h2>Підсумковий рахунок</h2>";
+  8
+  9 $stmt = $db->prepare("
+ 10     SELECT
+ 11         p.name,
+ 12         p.price,
+ 13         c.quantity,
+ 14         (p.price * c.quantity) AS total
+ 15     FROM cart c
+ 16     JOIN products p ON p.id = c.product_id
+ 17     WHERE c.user_id = :uid
+ 18 ");
+ 19 $stmt->bindValue(':uid', $user_id, SQLITE3_INTEGER);
+ 20 $results = $stmt->execute();
+ 21
+ 22 $total = 0;
+ 23 $hasItems = false;
+ 24
+ 25 echo "<table>";
+ 26 echo "<tr><th>Назва</th><th>Ціна</th><th>Кількість</th><th>Сума</th></tr>";
+ 27
+ 28 while ($row = $results->fetchArray(SQLITE3_ASSOC)) {
+ 29     $hasItems = true;
+ 30     echo "<tr>";
+ 31     echo "<td>" . htmlspecialchars($row['name']) . "</td>";
+ 32     echo "<td>" . $row['price'] . "</td>";
+ 33     echo "<td>" . $row['quantity'] . "</td>";
+ 34     echo "<td>" . $row['total'] . "</td>";
+ 35     echo "</tr>";
+ 36     $total += $row['total'];
+ 37 }
+ 38 echo "</table>";
+ 39
+ 40 if ($hasItems) {
+ 41     echo "<h3>Разом до сплати: <strong>{$total}</strong></h3>";
+ 42
+ 43     $clear = $db->prepare("DELETE FROM cart WHERE user_id = :uid");
+ 44     $clear->bindValue(':uid', $user_id, SQLITE3_INTEGER);
+ 45     $clear->execute();
+ 46
+ 47     echo "<p>Дякуємо за покупку!</p>";
+ 48 } else {
+ 49     echo "<p>Ваш кошик порожній.</p>";
+ 50 }
+ 51
+ 52 echo "<p><a href='index.php'>Повернутися на головну</a></p>";
+ 53 ?>
+В.8 profile
+GitHub репозиторій: https://github.com/NureZhylienkovAndrii/smp-pzpi-23-5-zhylienkov-andrii/blob/main/Lab3/smp-pzpi-23-5-zhylienkov-andrii-lab3/profile.php
+  1 <?php
+  2 require 'db.php';
+  3
+  4 echo "<link rel='stylesheet' href='style.css'>";
+  5
+  6 define('MIN_AGE', 7);
+  7 define('MAX_AGE', 150);
+  8
+  9 $user = $db->querySingle("SELECT * FROM user_profile WHERE id = 1", true);
+ 10 $errors = [];
+ 11
+ 12 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+ 13     $name = trim($_POST['name'] ?? '');
+ 14     $age = (int)($_POST['age'] ?? 0);
+ 15
+ 16     if (!preg_match('/[a-zA-Zа-яА-ЯіІїЇєЄ]/u', $name)) {
+ 17         $errors[] = "Імʼя має містити хоча б одну літеру.";
+ 18     }
+ 19
+ 20     if ($age < MIN_AGE || $age > MAX_AGE) {
+ 21         $errors[] = "Вік має бути від " . MIN_AGE . " до " . MAX_AGE . ".";
+ 22     }
+ 23
+ 24     if (empty($errors)) {
+ 25         if ($user) {
+ 26             $stmt = $db->prepare("UPDATE user_profile SET name = :name, age = :age WHERE id = 1");
+ 27         } else {
+ 28             $stmt = $db->prepare("INSERT INTO user_profile (id, name, age) VALUES (1, :name, :age)");
+ 29         }
+ 30
+ 31         $stmt->bindValue(':name', $name, SQLITE3_TEXT);
+ 32         $stmt->bindValue(':age', $age, SQLITE3_INTEGER);
+ 33         $stmt->execute();
+ 34
+ 35         header("Location: products.php");
+ 36         exit;
+ 37     }
+ 38 }
+ 39
+ 40 ?>
+ 41
+ 42 <h2>Налаштування профілю</h2>
+ 43
+ 44 <?php
+ 45 if (!empty($errors)) {
+ 46     echo "<ul style='color: red;'>";
+ 47     foreach ($errors as $e) {
+ 48         echo "<li>" . htmlspecialchars($e) . "</li>";
+ 49     }
+ 50     echo "</ul>";
+ 51 }
+ 52 ?>
+ 53
+ 54 <form method="post">
+ 55     <label>Імʼя:<br>
+ 56         <input type="text" name="name" required value="<?= htmlspecialchars($user['name'] ?? '') ?>">
+ 57     </label><br><br>
+ 58     <label>Вік:<br>
+ 59         <input type="number" name="age" required min="<?= MIN_AGE ?>" max="<?= MAX_AGE ?>" value="<?= htmlspecialchars($user['age'] ?? '') ?>">
+ 60     </label><br><br>
+ 61     <button type="submit">Зберегти</button>
+ 62 </form>
+ 63
+ 64 <p><a href="index.php">На головну</a></p>
+В.9 style
+GitHub репозиторій: https://github.com/NureZhylienkovAndrii/smp-pzpi-23-5-zhylienkov-andrii/blob/main/Lab3/smp-pzpi-23-5-zhylienkov-andrii-lab3/style.css
+  1 body {
+  2     font-family: sans-serif;
+  3     background-color: #f9f9f9;
+  4     text-align: center;
+  5     padding: 30px;
+  6 }
+  7
+  8 table {
+  9     margin: 0 auto;
+ 10     border-collapse: collapse;
+ 11 }
+ 12
+ 13 th, td {
+ 14     padding: 10px 15px;
+ 15     border: 1px solid #ccc;
+ 16 }
+ 17
+ 18 a, button {
+ 19     margin-top: 20px;
+ 20     display: inline-block;
+ 21     padding: 10px 15px;
+ 22     background-color: #4CAF50;
+ 23     color: white;
+ 24     text-decoration: none;
+ 25     border: none;
+ 26     border-radius: 5px;
+ 27     cursor: pointer;
+ 28 }
+ 29
+ 30 a:hover, button:hover {
+ 31     background-color: #45a049;
+ 32 }
