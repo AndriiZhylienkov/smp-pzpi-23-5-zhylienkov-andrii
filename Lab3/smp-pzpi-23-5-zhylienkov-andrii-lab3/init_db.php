@@ -4,8 +4,7 @@ $db = new SQLite3('shop.db');
 $db->exec("CREATE TABLE IF NOT EXISTS products (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    price INTEGER NOT NULL,
-    min_age INTEGER DEFAULT 0
+    price INTEGER NOT NULL
 )");
 
 $db->exec("CREATE TABLE IF NOT EXISTS user_profile (
