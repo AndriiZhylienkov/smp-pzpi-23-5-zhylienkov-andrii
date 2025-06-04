@@ -1,0 +1,465 @@
+﻿МІНІСТЕРСТВО ОСВІТИ І НАУКИ УКРАЇНИ
+ХАРКІВСЬКИЙ НАЦІОНАЛЬНИЙ УНІВЕРСИТЕТ РАДІОЕЛЕКТРОНІКИ
+ 
+  
+КАФЕДРА ПРОГРАМНОЇ ІНЖЕНЕРІЇ
+ 
+
+
+ 
+Дисципліна «Скриптові мови програмування»
+Звіт
+з лабораторної роботи №4
+
+
+ 
+ 
+   
+Виконав:
+ст. гр. ПЗПІ-23-5
+Жилєнков А. О.
+
+
+	 
+	Перевірив:
+ст. викладач кафедри ПІ
+Сокорчук І. П.
+ 
+	
+
+
+
+
+
+Харків – 2025
+1 ІСТОРІЯ ЗМІН
+№
+	Дата
+	Версія звіту
+	Опис змін та виправлень
+	1
+	04.06.2025
+	0.1
+	Створено розділ «Завдання»
+	2
+	04.06.2025
+	0.1
+	Створено розділ «Опис Виконаної роботи»
+	3
+	04.06.2025
+	0.1
+	Створено розділ «Висновки»
+	4
+	04.06.2025
+	0.1
+	Створено розділ «Додаток А»
+	5
+	04.06.2025
+	0.1
+	Створено розділ «Додаток Б»
+	6
+	04.06.2025
+	0.1
+	Створено розділ «Додаток В»
+	________________
+2 ЗАВДАННЯ
+Завданням до лабораторної роботи є розширення функціональності web-застосунку з попередньої роботи шляхом структурування його коду, реалізації авторизації та автентифікації користувачів, а також обробки форм із збереженням введених даних на сервері. Необхідно усунути дублювання елементів інтерфейсу шляхом створення окремих шаблонних файлів для шапки та підвалу сайту, реалізувати єдину точку входу до застосунку з динамічним підключенням сторінок, обмежити доступ до захищених сторінок лише для авторизованих користувачів, реалізувати реєстрацію нових облікових записів із перевіркою правильності введених даних та зберіганням їх у базі даних, а також забезпечити можливість перегляду і редагування персонального профілю з використанням форми, яка включає текстові поля і завантаження фотографії користувача з перевіркою коректності типу файлу.
+________________
+
+
+3 ОПИС ВИКОНАНОЇ РОБОТИ
+У межах виконання лабораторної роботи було здійснено суттєве вдосконалення web-застосунку продовольчого магазину «Весна». Основна увага приділялася структуруванню коду, впровадженню авторизації та автентифікації користувачів, а також розширенню функціональності персонального профілю з можливістю завантаження фото.
+Для усунення дублювання шапки та підвалу сайту були створені два окремих файли: header.php (див. В.1 header), що містить HTML-розмітку верхньої частини сторінки з меню та назвою сайту, а також footer.php (див. В.2 footer), який включає закриття основної структури сторінки й нижній інформаційний блок. Ці файли автоматично підключаються через новий файл main.php (див. В.3 main), що став центральною точкою входу у застосунок. У цьому файлі реалізовано механізм динамічного перемикання сторінок за допомогою параметра ?page=, переданого через URL. Таким чином, усі веб-сторінки, зокрема список товарів, кошик, профіль тощо, відкриваються через main.php, що значно спрощує маршрутизацію. Цей файл відповідає за головну структуру навігації всього сайту.
+Для авторизації користувачів створено сторінку login.php (див. В.4 login), яка відображає форму входу з перевіркою логіну та пароля (див. рис. Б.1). При успішному вході користувач авторизується у системі, йому присвоюється сесія, і він отримує доступ до внутрішніх сторінок магазину. Для виходу з системи реалізовано logout.php (див. В.5 logout), який завершує сесію та перенаправляє користувача назад на сторінку входу. Якщо користувач не авторизований і намагається отримати доступ до внутрішнього контенту, система автоматично показує сторінку page404.php (див. рис. Б.2), яка інформує про необхідність входу для перегляду ресурсу. Ці сторінки формують функціональний блок авторизації та безпеки, і кожна з них відповідає окремому скріншоту з відповідним станом системи.
+Для можливості створення нового облікового запису реалізовано окрему сторінку register.php (див. В.6 register), яка дозволяє зареєструватися шляхом заповнення форми з імʼям, віком, логіном та паролем (див. рис. Б.3). Усі введені дані проходять перевірку на відповідність вимогам, зокрема перевірку віку та унікальність логіна. При успішній реєстрації дані нового користувача додаються до таблиці users у базі даних, а користувач перенаправляється до сторінки входу.
+Одним із головних розширень стала модернізація сторінки profile.php (див. В.7 profile), що дозволяє кожному авторизованому користувачу редагувати власний профіль. Форма на цій сторінці дозволяє ввести імʼя, прізвище, дату народження, коротку інформацію про себе та завантажити фото (див. рис. Б.4). Було реалізовано комплексну валідацію: імʼя та прізвище мають містити щонайменше два символи, опис не менше 50 символів, а вік — не менше 16 років. Окрему увагу приділено завантаженню фото: дозволені лише зображення у форматах JPEG, PNG, GIF. Дані кожного користувача зберігаються у спільному файлі user_profile.php у вигляді асоціативного масиву, де ключем є ID користувача. Таким чином, усі профілі містяться в одному місці, що дозволяє уникнути надлишкового створення окремих файлів і контролювати профільну інформацію централізовано. Завантажені зображення автоматично поміщаються у створену папку uploads/, яка також входить до структури проєкту.
+Додатково були внесені зміни до вже існуючих файлів з попередньої лабораторної. Зокрема, усі переходи на сторінки магазину були змінені з прямих посилань типу products.php на виклики через main.php?page=products, main.php?page=cart тощо. Також було вилучено зайві виклики session_start() у всіх файлах, оскільки сесія тепер ініціалізується єдиним чином через main.php. Усі сторінки, включно з товарами, кошиком, чеком та головною сторінкою, були оновлені таким чином, щоб коректно відображалися у межах спільної структури та єдиного оформлення, включаючи підключення стилів через header.php.
+
+
+
+
+________________
+
+
+ВИСНОВКИ
+У ході виконання лабораторної роботи було успішно реалізовано основні етапи побудови захищеного web-застосунку з підтримкою автентифікації, структуруванням коду та обробкою форм збереження даних. Завдяки переходу до централізованого керування навігацією через файл main.php вдалося значно спростити логіку маршрутизації між сторінками сайту та забезпечити єдине оформлення інтерфейсу за допомогою шаблонів header.php і footer.php. Впроваджено механізм реєстрації та входу користувача, реалізовано перевірку авторизованості перед доступом до захищених сторінок, що гарантує базовий рівень безпеки. Особливу увагу приділено формуванню особистого профілю користувача, де передбачено валідацію даних та завантаження зображення.
+________________
+
+
+ДОДАТОК А
+Відеозапис
+Відеозапис презентації результатів лабораторної роботи: https://youtu.be/xRpksH2j8SQ
+Хронологічний опис відеозапису
+00:27 — Опис файлу header.php
+02:08 — Опис файлу main.php
+03:16 — Опис файлу page404.php
+03:27 — Опис файлу footer.php
+03:42 — Опис файлу register.php
+05:39 — Опис файлу login.php
+07:14 — Опис файлу logout.php
+07:36 — Опис файлу profile.php
+11:12 — Тестування оновленої програми
+________________
+ДОДАТОК Б
+Графічні матеріали
+  Рисунок Б.1 — Сторінка входу
+  
+
+Рисунок Б.2 — Сторінка 404
+
+
+  
+
+Рисунок Б.3 — Сторінка реєстрації нового користувача
+
+
+  Рисунок Б.4 — Профіль користувача
+________________
+ДОДАТОК В
+Програмний код
+В.1 header
+GitHub репозиторій: https://github.com/NureZhylienkovAndrii/smp-pzpi-23-5-zhylienkov-andrii/blob/main/Lab4/smp-pzpi-23-5-zhylienkov-andrii-lab4/header.php
+  1 <?php
+  2 if (session_status() === PHP_SESSION_NONE) {
+  3     session_start();
+  4 }
+  5 ?>
+  6
+  7 <!DOCTYPE html>
+  8 <html lang="uk">
+  9 <head>
+ 10     <meta charset="UTF-8">
+ 11     <title>Магазин "Весна"</title>
+ 12     <link rel="stylesheet" href="style.css">
+ 13 </head>
+ 14 <body>
+ 15
+ 16 <div class="menu-bar">
+ 17     <a href="main.php?page=home">Home</a>
+ 18     <span>|</span>
+ 19     <a href="main.php?page=products">Products</a>
+ 20     <span>|</span>
+ 21     <?php if (isset($_SESSION['user_id'])): ?>
+ 22         <a href="main.php?page=cart">Cart</a>
+ 23         <span>|</span>
+ 24         <a href="main.php?page=logout">Logout</a>
+ 25     <?php else: ?>
+ 26         <a href="main.php?page=login">Login</a>
+ 27     <?php endif; ?>
+ 28 </div>
+ 29 <hr>
+В.2 footer
+GitHub репозиторій: https://github.com/NureZhylienkovAndrii/smp-pzpi-23-5-zhylienkov-andrii/blob/main/Lab4/smp-pzpi-23-5-zhylienkov-andrii-lab4/footer.php
+  1 <hr>
+  2 <footer>
+  3     <p>2025 Магазин "Весна"</p>
+  4 </footer>
+  5 </body>
+  6 </html>
+В.3 main
+GitHub репозиторій: https://github.com/NureZhylienkovAndrii/smp-pzpi-23-5-zhylienkov-andrii/blob/main/Lab4/smp-pzpi-23-5-zhylienkov-andrii-lab4/main.php
+  1 <?php
+  2 session_start();
+  3 require 'header.php';
+  4
+  5 $page = $_GET['page'] ?? 'home';
+  6 $public_pages = ['login', 'register'];
+  7
+  8 if (!isset($_SESSION['user_id']) && !in_array($page, $public_pages)) {
+  9     require 'page404.php';
+ 10 } else {
+ 11     switch ($page) {
+ 12         case 'home':
+ 13             require 'index.php';
+ 14             break;
+ 15         case 'products':
+ 16             require 'products.php';
+ 17             break;
+ 18         case 'cart':
+ 19             require 'cart.php';
+ 20             break;
+ 21         case 'profile':
+ 22             require 'profile.php';
+ 23             break;
+ 24         case 'receipt':
+ 25             require 'receipt.php';
+ 26             break;
+ 27         case 'login':
+ 28             require 'login.php';
+ 29             break;
+ 30         case 'register':
+ 31             require 'register.php';
+ 32             break;
+ 33         case 'logout':
+ 34             require 'logout.php';
+ 35             break;
+ 36         default:
+ 37             require 'page404.php';
+ 38     }
+ 39 }
+ 40
+ 41 require 'footer.php';
+В.4 login
+GitHub репозиторій: https://github.com/NureZhylienkovAndrii/smp-pzpi-23-5-zhylienkov-andrii/blob/main/Lab4/smp-pzpi-23-5-zhylienkov-andrii-lab4/login.php
+  1 <?php
+  2 require 'db.php';
+  3 echo "<link rel='stylesheet' href='style.css'>";
+  4
+  5 $errors = [];
+  6
+  7 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  8     $username = trim($_POST['username'] ?? '');
+  9     $password = $_POST['password'] ?? '';
+ 10
+ 11     if ($username === '' || $password === '') {
+ 12         $errors[] = "Будь ласка, заповніть усі поля.";
+ 13     } else {
+ 14         $stmt = $db->prepare("SELECT * FROM users WHERE username = :username");
+ 15         $stmt->bindValue(':username', $username, SQLITE3_TEXT);
+ 16         $result = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
+ 17
+ 18         if ($result && password_verify($password, $result['password_hash'])) {
+ 19             $_SESSION['user_id'] = $result['id'];
+ 20             $_SESSION['user_name'] = $result['name'];
+ 21             header("Location: main.php?page=home");
+ 22             exit;
+ 23         } else {
+ 24             $errors[] = "Невірний логін або пароль.";
+ 25         }
+ 26     }
+ 27 }
+ 28 ?>
+ 29
+ 30 <h2>Вхід до системи</h2>
+ 31
+ 32 <?php if (!empty($errors)): ?>
+ 33     <ul style="color: red;">
+ 34         <?php foreach ($errors as $e): ?>
+ 35             <li><?= htmlspecialchars($e) ?></li>
+ 36         <?php endforeach; ?>
+ 37     </ul>
+ 38 <?php endif; ?>
+ 39
+ 40 <form method="post">
+ 41     <label>Логін:<br>
+ 42         <input type="text" name="username" required>
+ 43     </label><br><br>
+ 44
+ 45     <label>Пароль:<br>
+ 46         <input type="password" name="password" required>
+ 47     </label><br><br>
+ 48
+ 49     <button type="submit">Увійти</button>
+ 50 </form>
+ 51
+ 52 <p><a href="main.php?page=register">Створити акаунт</a></p>
+В.5 logout
+GitHub репозиторій: https://github.com/NureZhylienkovAndrii/smp-pzpi-23-5-zhylienkov-andrii/blob/main/Lab4/smp-pzpi-23-5-zhylienkov-andrii-lab4/logout.php
+  1 <?php
+  2 session_start();
+  3 session_unset();
+  4 session_destroy();
+  5 header("Location: main.php?page=login");
+  6 exit;
+В.6 register
+GitHub репозиторій: https://github.com/NureZhylienkovAndrii/smp-pzpi-23-5-zhylienkov-andrii/blob/main/Lab4/smp-pzpi-23-5-zhylienkov-andrii-lab4/register.php
+  1 <?php
+  2 require 'db.php';
+  3 echo "<link rel='stylesheet' href='style.css'>";
+  4
+  5 $errors = [];
+  6
+  7 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  8     $name = trim($_POST['name'] ?? '');
+  9     $age = (int)($_POST['age'] ?? 0);
+ 10     $username = trim($_POST['username'] ?? '');
+ 11     $password = $_POST['password'] ?? '';
+ 12     $confirm = $_POST['confirm'] ?? '';
+ 13
+ 14     if (!preg_match('/[a-zA-Zа-яА-ЯіІїЇєЄ]/u', $name)) {
+ 15         $errors[] = "Імʼя має містити хоча б одну літеру.";
+ 16     }
+ 17
+ 18     if ($age < 7 || $age > 150) {
+ 19         $errors[] = "Вік має бути від 7 до 150.";
+ 20     }
+ 21
+ 22     if (strlen($username) < 4) {
+ 23         $errors[] = "Логін повинен містити щонайменше 4 символи.";
+ 24     }
+ 25
+ 26     if (strlen($password) < 5) {
+ 27         $errors[] = "Пароль повинен містити щонайменше 5 символів.";
+ 28     }
+ 29
+ 30     if ($password !== $confirm) {
+ 31         $errors[] = "Паролі не співпадають.";
+ 32     }
+ 33
+ 34     if (empty($errors)) {
+ 35         $hash = password_hash($password, PASSWORD_DEFAULT);
+ 36
+ 37         $stmt = $db->prepare("INSERT INTO users (name, age, username, password_hash) VALUES (:name, :age, :username, :hash)");
+ 38         $stmt->bindValue(':name', $name, SQLITE3_TEXT);
+ 39         $stmt->bindValue(':age', $age, SQLITE3_INTEGER);
+ 40         $stmt->bindValue(':username', $username, SQLITE3_TEXT);
+ 41         $stmt->bindValue(':hash', $hash, SQLITE3_TEXT);
+ 42
+ 43         try {
+ 44             $stmt->execute();
+ 45             header("Location: main.php?page=login");
+ 46             exit;
+ 47         } catch (Exception $e) {
+ 48             $errors[] = "Користувач із таким логіном вже існує.";
+ 49         }
+ 50     }
+ 51 }
+ 52 ?>
+ 53
+ 54 <h2>Реєстрація</h2>
+ 55
+ 56 <?php if ($errors): ?>
+ 57     <ul style="color: red;">
+ 58         <?php foreach ($errors as $e): ?>
+ 59             <li><?= htmlspecialchars($e) ?></li>
+ 60         <?php endforeach; ?>
+ 61     </ul>
+ 62 <?php endif; ?>
+ 63
+ 64 <form method="post">
+ 65     <label>Імʼя:<br>
+ 66         <input type="text" name="name" required>
+ 67     </label><br><br>
+ 68
+ 69     <label>Вік:<br>
+ 70         <input type="number" name="age" required min="16" max="150">
+ 71     </label><br><br>
+ 72
+ 73     <label>Логін:<br>
+ 74         <input type="text" name="username" required>
+ 75     </label><br><br>
+ 76
+ 77     <label>Пароль:<br>
+ 78         <input type="password" name="password" required>
+ 79     </label><br><br>
+ 80
+ 81     <label>Підтвердження пароля:<br>
+ 82         <input type="password" name="confirm" required>
+ 83     </label><br><br>
+ 84
+ 85     <button type="submit">Зареєструватися</button>
+ 86 </form>
+В.7 profile
+GitHub репозиторій: https://github.com/NureZhylienkovAndrii/smp-pzpi-23-5-zhylienkov-andrii/blob/main/Lab4/smp-pzpi-23-5-zhylienkov-andrii-lab4/profile.php
+  1 <?php
+  2
+  3 $user_id = $_SESSION['user_id'];
+  4 $profileFile = 'user_profile.php';
+  5 $allProfiles = file_exists($profileFile) ? include($profileFile) : [];
+  6
+  7 $profile = $allProfiles[$user_id] ?? [];
+  8 $errors = [];
+  9 $success = false;
+ 10
+ 11 if (!function_exists('calculateAge')) {
+ 12     function calculateAge($birthDate) {
+ 13         $today = new DateTime();
+ 14         $dob = DateTime::createFromFormat('Y-m-d', $birthDate);
+ 15         return $dob ? $today->diff($dob)->y : 0;
+ 16     }
+ 17 }
+ 18
+ 19 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+ 20     $firstName = trim($_POST['first_name'] ?? '');
+ 21     $lastName = trim($_POST['last_name'] ?? '');
+ 22     $birthDate = $_POST['birth_date'] ?? '';
+ 23     $about = trim($_POST['about'] ?? '');
+ 24
+ 25     if ($firstName === '' || strlen($firstName) < 2) {
+ 26         $errors[] = "Ім’я має містити щонайменше 2 символи.";
+ 27     }
+ 28
+ 29     if ($lastName === '' || strlen($lastName) < 2) {
+ 30         $errors[] = "Прізвище має містити щонайменше 2 символи.";
+ 31     }
+ 32
+ 33     if ($birthDate === '' || calculateAge($birthDate) < 16) {
+ 34         $errors[] = "Користувачеві має бути не менше 16 років.";
+ 35     }
+ 36
+ 37     if (strlen($about) < 50) {
+ 38         $errors[] = "Стисла інформація повинна містити не менше 50 символів.";
+ 39     }
+ 40
+ 41     $photoPath = $profile['photo'] ?? '';
+ 42     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+ 43         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+ 44         if (!in_array($_FILES['photo']['type'], $allowedTypes)) {
+ 45             $errors[] = "Фото повинне бути JPG, PNG або GIF.";
+ 46         } else {
+ 47             if (!is_dir('uploads')) {
+ 48                 mkdir('uploads');
+ 49             }
+ 50             $ext = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
+ 51             $photoName = "user{$user_id}_" . time() . '.' . $ext;
+ 52             $photoPath = 'uploads/' . $photoName;
+ 53             move_uploaded_file($_FILES['photo']['tmp_name'], $photoPath);
+ 54         }
+ 55     }
+ 56
+ 57     if (empty($errors)) {
+ 58         $allProfiles[$user_id] = [
+ 59             'first_name' => $firstName,
+ 60             'last_name' => $lastName,
+ 61             'birth_date' => $birthDate,
+ 62             'about' => $about,
+ 63             'photo' => $photoPath
+ 64         ];
+ 65         file_put_contents($profileFile, "<?php\nreturn " . var_export($allProfiles, true) . ";\n");
+ 66         $profile = $allProfiles[$user_id];
+ 67         $success = true;
+ 68     }
+ 69 }
+ 70 ?>
+ 71
+ 72 <h2>Мій профіль</h2>
+ 73
+ 74 <?php if ($success): ?>
+ 75     <p style="color: green;">Профіль збережено успішно!</p>
+ 76 <?php endif; ?>
+ 77
+ 78 <?php if (!empty($errors)): ?>
+ 79     <ul style="color: red;">
+ 80         <?php foreach ($errors as $e): ?>
+ 81             <li><?= htmlspecialchars($e) ?></li>
+ 82         <?php endforeach; ?>
+ 83     </ul>
+ 84 <?php endif; ?>
+ 85
+ 86 <form method="post" enctype="multipart/form-data">
+ 87     <label>Ім’я:<br>
+ 88         <input type="text" name="first_name" required value="<?= htmlspecialchars($profile['first_name'] ?? '') ?>">
+ 89     </label><br><br>
+ 90
+ 91     <label>Прізвище:<br>
+ 92         <input type="text" name="last_name" required value="<?= htmlspecialchars($profile['last_name'] ?? '') ?>">
+ 93     </label><br><br>
+ 94
+ 95     <label>Дата народження:<br>
+ 96         <input type="date" name="birth_date" required value="<?= htmlspecialchars($profile['birth_date'] ?? '') ?>">
+ 97     </label><br><br>
+ 98
+ 99     <label>Стисла інформація:<br>
+100         <textarea name="about" rows="5" cols="40" required><?= htmlspecialchars($profile['about'] ?? '') ?></textarea>
+101     </label><br><br>
+102
+103     <label>Фото:<br>
+104         <input type="file" name="photo" accept="image/*">
+105     </label><br><br>
+106
+107     <?php if (!empty($profile['photo']) && file_exists($profile['photo'])): ?>
+108         <img src="<?= htmlspecialchars($profile['photo']) ?>" alt="Фото користувача" width="150"><br><br>
+109     <?php endif; ?>
+110
+111     <button type="submit">Зберегти</button>
+112 </form>
